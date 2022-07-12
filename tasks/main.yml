@@ -1,0 +1,48 @@
+---
+- name: install dependencies from apt
+  become: true
+  apt:
+    name:
+      - build-essential
+      - cmake
+      - gettext
+      - libncurses5-dev
+      - libpcre2-dev
+      - ncurses-dev
+    state: latest
+
+- name: fetch latest release manifest from github
+  uri:
+    url: https://api.github.com/repos/fish-shell/fish-shell/releases/latest
+    return_content: true
+  register: manifest_result
+
+# TODO: Download signature as well, and verify
+# Author doesn't include a link to their public key, not sure how to make signature verification meaningful
+- name: download, compile, and install fish shell
+  become: true
+  vars:
+    jmes_query: "assets[?ends_with(name, '.tar.xz')] | [0]"
+    tarball_asset: "{{ manifest_result.json | json_query(jmes_query) }}"
+    src_prefix: "/usr/src" # TODO: Define at a higher level
+  block:
+    - name: download tarball # and signature
+      get_url:
+        url: "{{ tarball_asset.browser_download_url }}"
+        dest: "{{ src_prefix }}/{{ tarball_asset.name }}"
+      register: tarball_result
+
+    - name: extract tarball
+      unarchive:
+        src: "{{ tarball_result.dest }}"
+        dest: "{{ src_prefix }}"
+      register: extract_result
+
+    - name: compile and install
+      when: extract_result.changed
+      shell:
+        cmd: |
+          cmake .
+          make
+          make install
+        chdir: "{{ src_prefix }}/{{ tarball_asset.name | replace('.tar.xz', '') }}"
