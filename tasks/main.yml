@@ -46,3 +46,14 @@
           make
           make install
         chdir: "{{ src_prefix }}/{{ tarball_asset.name | replace('.tar.xz', '') }}"
+
+- name: install fisher plugin manager
+  shell: curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher
+
+- name: copy user plugin file
+  copy:
+    src: kakrc
+    dest: ~/.config/kak/kakrc
+
+- name: install user plugins
+  shell: fisher update
