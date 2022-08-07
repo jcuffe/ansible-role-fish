@@ -48,7 +48,9 @@
         chdir: "{{ src_prefix }}/{{ tarball_asset.name | replace('.tar.xz', '') }}"
 
 - name: install fisher plugin manager
-  shell: curl -sL https://git.io/fisher | source && fisher install jorgebucaran/fisher
+  copy:
+    src: fisher.fish
+    dest: ~/.config/kak/functions
 
 - name: copy user plugin file
   copy:
@@ -56,4 +58,4 @@
     dest: ~/.config/kak/kakrc
 
 - name: install user plugins
-  shell: fisher update
+  shell: fish fisher update
