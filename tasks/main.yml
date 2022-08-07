@@ -58,4 +58,4 @@
     dest: ~/.config/fish/fish_plugins
 
 - name: install user plugins
-  shell: fish fisher update
+  shell: fish -c 'fisher update'
