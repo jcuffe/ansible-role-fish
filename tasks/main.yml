@@ -50,12 +50,12 @@
 - name: install fisher plugin manager
   copy:
     src: fisher.fish
-    dest: ~/.config/kak/functions
+    dest: ~/.config/fish/functions/fisher.fish
 
 - name: copy user plugin file
   copy:
-    src: kakrc
-    dest: ~/.config/kak/kakrc
+    src: fish_plugins
+    dest: ~/.config/fish/fish_plugins
 
 - name: install user plugins
   shell: fish fisher update
