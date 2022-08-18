@@ -47,6 +47,11 @@
           make install
         chdir: "{{ src_prefix }}/{{ tarball_asset.name | replace('.tar.xz', '') }}"
 
+- name: copy user defined configuration
+  copy:
+    src: conf.d
+    dest: ~/.config/fish/
+
 - name: copy user defined functions (+ fisher plugin manager)
   copy:
     src: functions
