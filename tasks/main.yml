@@ -10,13 +10,11 @@
       - libpcre2-dev
       - ncurses-dev
     state: latest
-
 - name: fetch latest release manifest from github
   uri:
     url: https://api.github.com/repos/fish-shell/fish-shell/releases/latest
     return_content: true
   register: manifest_result
-
 # TODO: Download signature as well, and verify
 # Author doesn't include a link to their public key, not sure how to make signature verification meaningful
 - name: download, compile, and install fish shell
@@ -31,13 +29,11 @@
         url: "{{ tarball_asset.browser_download_url }}"
         dest: "{{ src_prefix }}/{{ tarball_asset.name }}"
       register: tarball_result
-
     - name: extract tarball
       unarchive:
         src: "{{ tarball_result.dest }}"
         dest: "{{ src_prefix }}"
       register: extract_result
-
     - name: compile and install
       when: extract_result.changed
       shell:
@@ -46,21 +42,25 @@
           make
           make install
         chdir: "{{ src_prefix }}/{{ tarball_asset.name | replace('.tar.xz', '') }}"
-
-- name: copy user defined configuration
-  copy:
-    src: conf.d
-    dest: ~/.config/fish/
-
-- name: copy user defined functions (+ fisher plugin manager)
-  copy:
-    src: functions
-    dest: ~/.config/fish/
-
-- name: copy fisher plugin file
-  copy:
-    src: fish_plugins
-    dest: ~/.config/fish/
-
-- name: install user plugins
-  shell: fish -c 'fisher update'
+- name: apply fish configuration and plugins
+  vars:
+    config_directory: "~/.config/fish"
+  block:
+    - name: ensure existence of config directory
+      file:
+        path: "{{ config_directory }}"
+        state: directory
+    - name: copy user defined configuration
+      copy:
+        src: conf.d
+        dest: "{{ config_directory }}"
+    - name: copy user defined functions (+ fisher plugin manager)
+      copy:
+        src: functions
+        dest: "{{ config_directory }}"
+    - name: copy fisher plugin file
+      copy:
+        src: fish_plugins
+        dest: "{{ config_directory }}"
+    - name: install user plugins
+      shell: fish -c 'fisher update'
