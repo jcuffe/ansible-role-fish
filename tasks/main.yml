@@ -1,8 +1,9 @@
 ---
-- name: install dependencies from apt
+- name: install dependencies and selected utilities from apt
   become: true
   apt:
     name:
+      # Dependencies
       - build-essential
       - cmake
       - curl
@@ -10,6 +11,8 @@
       - libncurses5-dev
       - libpcre2-dev
       - ncurses-dev
+      # Utilities
+      - silversearcher-ag
     state: latest
 - name: fetch latest release manifest from github
   uri:
