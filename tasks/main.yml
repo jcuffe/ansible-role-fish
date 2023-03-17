@@ -67,4 +67,4 @@
         src: fish_plugins
         dest: "{{ config_directory }}"
     - name: install user plugins
-      shell: fish -c 'fisher update'
+      shell: /usr/local/bin/fish -c 'fisher update'
