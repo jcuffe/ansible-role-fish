@@ -10,6 +10,11 @@ if test -d /usr/local/zig
     set --prepend PATH /usr/local/zig
 end
 
+# If flyctl is installed, add it to the path
+if test -d ~/.fly/bin
+    set --prepend PATH ~/.fly/bin
+end
+
 # If asdf is present, load its commands
 if test -d ~/.asdf
     source ~/.asdf/asdf.fish
