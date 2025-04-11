@@ -40,6 +40,8 @@
       register: extract_result
     - name: compile and install
       when: extract_result.changed
+      environment:
+        PATH: "{{ ansible_env.PATH }}:/home/jcuffe/.cargo/bin"
       shell:
         cmd: |
           cmake .
